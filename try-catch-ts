@@ -1,0 +1,56 @@
+import * as fs from 'fs';
+
+// Pfad zur Datei, in der die Notizen gespeichert werden
+const NOTES_FILE_PATH = 'notes.txt';
+
+// Funktion zum Hinzufügen einer Notiz
+function addNote(note: string): void {
+    try {
+        fs.appendFileSync(NOTES_FILE_PATH, note + '\n');
+        console.log('Notiz hinzugefügt:', note);
+    } catch (error) {
+        console.error('Fehler beim Hinzufügen der Notiz:', error);
+    }
+}
+
+// Funktion zum Anzeigen aller Notizen
+function showNotes(): void {
+    try {
+        const notes = fs.readFileSync(NOTES_FILE_PATH, 'utf-8').split('\n');
+        console.log('Alle Notizen:');
+        notes.forEach(note => console.log('-', note.trim()));
+    } catch (error) {
+        console.error('Fehler beim Lesen der Notizen:', error);
+    }
+}
+
+// Funktion zum Löschen einer Notiz
+function deleteNote(noteToDelete: string): void {
+    try {
+        const notes = fs.readFileSync(NOTES_FILE_PATH, 'utf-8').split('\n');
+        const updatedNotes = notes.filter(note => note.trim() !== noteToDelete.trim());
+        fs.writeFileSync(NOTES_FILE_PATH, updatedNotes.join('\n'));
+        console.log('Notiz gelöscht:', noteToDelete);
+    } catch (error) {
+        console.error('Fehler beim Löschen der Notiz:', error);
+    }
+}
+
+// Anwendung initialisieren
+function initializeApp(): void {
+    const action = process.argv[2];
+    const note = process.argv[3];
+
+    if (action === 'add' && note) {
+        addNote(note);
+    } else if (action === 'show') {
+        showNotes();
+    } else if (action === 'delete' && note) {
+        deleteNote(note);
+    } else {
+        console.log('Ungültige Aktion oder Notiz fehlt.');
+    }
+}
+
+// Anwendung initialisieren
+initializeApp();
